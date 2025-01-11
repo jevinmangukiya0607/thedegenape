@@ -1,5 +1,6 @@
-'use client'
+"use client";
 import React, { useState } from "react";
+import { useAppKit, useAppKitAccount } from "@reown/appkit/react";
 import ConnectButton from "./components/connectButton";
 
 export default function Home() {
@@ -9,16 +10,22 @@ export default function Home() {
     { id: 3, name: "Task 3", points: 1000 },
   ];
 
+  const { open } = useAppKit(); // Control the wallet modal
+  const { isConnected, address } = useAppKitAccount(); // Check wallet status
   const [taskStatus, setTaskStatus] = useState(
     tasks.reduce((acc, task) => {
       acc[task.id] = { inProgress: false, completed: false };
       return acc;
     }, {})
   );
-
   const [totalPoints, setTotalPoints] = useState(0);
 
   const handleTaskClick = (taskId) => {
+    if (!isConnected) {
+      open({ view: "Connect" }); // Open the wallet connection modal
+      return;
+    }
+
     if (taskStatus[taskId].completed) {
       alert(
         `${tasks.find((task) => task.id === taskId).name} is already completed!`
@@ -43,7 +50,7 @@ export default function Home() {
 
     alert(`${tasks.find((task) => task.id === taskId).name} is in progress!`);
 
-    //task completion after 7 seconds
+    // Simulate task completion after 7 seconds
     setTimeout(() => {
       setTaskStatus((prev) => ({
         ...prev,
@@ -57,44 +64,61 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center py-10">
+    <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-indigo-100 flex flex-col items-center justify-center py-10 px-4">
+      {/* Wallet Connection Status */}
       <div className="mb-6">
-        <ConnectButton />
+        {isConnected ? (
+          <p className="text-lg font-bold text-indigo-600 bg-indigo-50 px-4 py-2 rounded-lg shadow">
+            Wallet Connected: <span className="font-mono">{address}</span>
+          </p>
+        ) : (
+          <button
+            onClick={() => open({ view: "Connect" })}
+            className="px-6 py-2 bg-indigo-600 text-white font-semibold rounded-lg shadow-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all"
+          >
+            <ConnectButton />
+          </button>
+        )}
       </div>
 
-      <h1 className="text-3xl font-bold text-gray-800 mb-4">Task Manager</h1>
+      <h1 className="text-4xl font-bold text-indigo-800 mb-6">Task Manager</h1>
 
-      <div className="mb-6">
-        <span className="text-lg font-semibold text-gray-600">
-          Total Points:{" "}
-        </span>
-        <span className="text-2xl font-bold text-green-500">{totalPoints}</span>
+      {/* Total Points */}
+      <div className="mb-8 text-center">
+        <p className="text-lg font-semibold text-gray-700">Total Points:</p>
+        <p className="text-3xl font-extrabold text-indigo-600">{totalPoints}</p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-4xl">
+      {/* Task List */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-5xl">
         {tasks.map((task) => (
           <div
             key={task.id}
-            className="bg-white shadow-md rounded-lg p-6 flex flex-col items-center justify-center border border-gray-200"
+            className="bg-white shadow-lg rounded-lg p-6 flex flex-col items-center justify-center border border-gray-200 hover:shadow-xl transition-all"
           >
-            <h2 className="text-xl font-semibold text-gray-800 mb-2">
+            <h2 className="text-2xl font-semibold text-gray-800 mb-3">
               {task.name}
             </h2>
-            <p className="text-gray-600 mb-4">Points: {task.points}</p>
+            <p className="text-lg text-gray-600 mb-4">Points: {task.points}</p>
 
+            {/* Task Button */}
             <button
               onClick={() => handleTaskClick(task.id)}
-              className={`px-4 py-2 rounded-lg font-medium text-white w-full transition-all 
+              className={`px-5 py-3 rounded-lg font-medium text-white w-full text-center transition-all 
                 ${
                   taskStatus[task.id].completed
-                    ? "bg-green-500 cursor-not-allowed"
+                    ? "bg-green-500 cursor-not-allowed opacity-75"
                     : taskStatus[task.id].inProgress
-                    ? "bg-yellow-500 cursor-wait"
-                    : "bg-blue-500 hover:bg-blue-600"
+                    ? "bg-yellow-500 cursor-wait opacity-75"
+                    : isConnected
+                    ? "bg-indigo-600 hover:bg-indigo-700"
+                    : "bg-gray-400 cursor-not-allowed opacity-75"
                 }
               `}
               disabled={
-                taskStatus[task.id].completed || taskStatus[task.id].inProgress
+                taskStatus[task.id].completed ||
+                taskStatus[task.id].inProgress ||
+                !isConnected
               }
             >
               {taskStatus[task.id].completed
