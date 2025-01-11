@@ -3,7 +3,7 @@ import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
-import { headers } from "next/headers"; // added
+import { headers } from "next/headers";
 import ContextProvider from "@/context";
 
 export const metadata = {
@@ -12,7 +12,8 @@ export const metadata = {
 };
 
 export default async function RootLayout({ children }) {
-  const headersObj = headers();
+  // Await headers() properly
+  const headersObj = await headers();
   const cookies = headersObj.get("cookie");
 
   return (
