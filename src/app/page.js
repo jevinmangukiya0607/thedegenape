@@ -5,62 +5,53 @@ import ConnectButton from "./components/connectButton";
 
 export default function Home() {
   const tasks = [
-    { id: 1, name: "Task 1", points: 1000 },
-    { id: 2, name: "Task 2", points: 1000 },
-    { id: 3, name: "Task 3", points: 1000 },
+    {
+      id: 1,
+      name: "Follow @DegenApesNFT",
+      points: 30000,
+      url: "https://x.com/intent/follow?screen_name=DegenApesNFT",
+    },
+    {
+      id: 2,
+      name: "Tweet the Message",
+      points: 15000,
+      url: "https://twitter.com/intent/tweet?text=Join%20The%20Tribe%20%F0%9F%8D%8C%20%F0%9F%90%92%0A%0AThe%20next%20big%20thing%20is%20here%20on%20%40apecoin%0A%0AJoin%20the%20tribe%20and%20secure%20your%20spot:%20https://www.thedegenape.xyz/%20https://x.com/DegenApesNFT/status/1865441906601443491",
+    },
+    {
+      id: 3,
+      name: "Reply to the Thread",
+      points: 30000,
+      url: "https://x.com/intent/post?in_reply_to=1872311422023037190&text=%E2%9C%B3%EF%B8%8F%2B%20%F0%9F%91%BB%20=%20@Abstract_Ghosts%0A%0ADon%27t%20miss%20the%20alpha%2C%20use%20my%20code%3A%0A%0Aabstractghosts.com",
+    },
   ];
 
   const { open } = useAppKit(); // Control the wallet modal
   const { isConnected, address } = useAppKitAccount(); // Check wallet status
   const [taskStatus, setTaskStatus] = useState(
     tasks.reduce((acc, task) => {
-      acc[task.id] = { inProgress: false, completed: false };
+      acc[task.id] = { completed: false };
       return acc;
     }, {})
   );
   const [totalPoints, setTotalPoints] = useState(0);
 
-  const handleTaskClick = (taskId) => {
+  const handleTaskClick = (taskId, taskUrl) => {
     if (!isConnected) {
       open({ view: "Connect" }); // Open the wallet connection modal
       return;
     }
 
-    if (taskStatus[taskId].completed) {
-      alert(
-        `${tasks.find((task) => task.id === taskId).name} is already completed!`
-      );
-      return;
-    }
+    // Open the respective task URL in a new tab
+    window.open(taskUrl, "_blank");
 
-    if (taskStatus[taskId].inProgress) {
-      alert(
-        `${
-          tasks.find((task) => task.id === taskId).name
-        } is already in progress!`
-      );
-      return;
-    }
-
-    // Mark task as in progress
+    // Mark task as completed and update points
     setTaskStatus((prev) => ({
       ...prev,
-      [taskId]: { ...prev[taskId], inProgress: true },
+      [taskId]: { completed: true },
     }));
-
-    alert(`${tasks.find((task) => task.id === taskId).name} is in progress!`);
-
-    // Simulate task completion after 7 seconds
-    setTimeout(() => {
-      setTaskStatus((prev) => ({
-        ...prev,
-        [taskId]: { inProgress: false, completed: true },
-      }));
-      setTotalPoints(
-        (prev) => prev + tasks.find((task) => task.id === taskId).points
-      );
-      alert(`${tasks.find((task) => task.id === taskId).name} is completed!`);
-    }, 7000);
+    setTotalPoints(
+      (prev) => prev + tasks.find((task) => task.id === taskId).points
+    );
   };
 
   return (
@@ -81,7 +72,9 @@ export default function Home() {
         )}
       </div>
 
-      <h1 className="text-4xl font-bold text-indigo-800 mb-6">Task Manager</h1>
+      <h1 className="text-4xl font-bold text-indigo-800 mb-6">
+        EARLY OG REWARDS
+      </h1>
 
       {/* Total Points */}
       <div className="mb-8 text-center">
@@ -90,42 +83,37 @@ export default function Home() {
       </div>
 
       {/* Task List */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-5xl">
+      <div className="flex flex-col gap-6 w-full max-w-3xl mx-auto">
         {tasks.map((task) => (
           <div
             key={task.id}
-            className="bg-white shadow-lg rounded-lg p-6 flex flex-col items-center justify-center border border-gray-200 hover:shadow-xl transition-all"
+            className="bg-white shadow-lg rounded-lg p-6 flex items-center justify-between border border-gray-200 hover:shadow-xl transition-all"
           >
-            <h2 className="text-2xl font-semibold text-gray-800 mb-3">
+            {/* Task Name */}
+            <h2 className="text-2xl font-semibold text-gray-800">
               {task.name}
             </h2>
-            <p className="text-lg text-gray-600 mb-4">Points: {task.points}</p>
+
+            {/* Points */}
+            <p className="text-lg font-bold text-indigo-600">
+              Points: {task.points}
+            </p>
 
             {/* Task Button */}
             <button
-              onClick={() => handleTaskClick(task.id)}
-              className={`px-5 py-3 rounded-lg font-medium text-white w-full text-center transition-all 
-                ${
-                  taskStatus[task.id].completed
-                    ? "bg-green-500 cursor-not-allowed opacity-75"
-                    : taskStatus[task.id].inProgress
-                    ? "bg-yellow-500 cursor-wait opacity-75"
-                    : isConnected
-                    ? "bg-indigo-600 hover:bg-indigo-700"
-                    : "bg-gray-400 cursor-not-allowed opacity-75"
-                }
-              `}
-              disabled={
-                taskStatus[task.id].completed ||
-                taskStatus[task.id].inProgress ||
-                !isConnected
-              }
+              onClick={() => handleTaskClick(task.id, task.url)}
+              className={`px-5 py-3 rounded-lg font-medium text-white transition-all w-full sm:w-auto 
+        ${
+          taskStatus[task.id].completed
+            ? "bg-green-500 cursor-not-allowed opacity-75"
+            : isConnected
+            ? "bg-indigo-600 hover:bg-indigo-700"
+            : "bg-gray-400 cursor-not-allowed opacity-75"
+        }
+      `}
+              disabled={taskStatus[task.id].completed || !isConnected}
             >
-              {taskStatus[task.id].completed
-                ? "✔ Completed"
-                : taskStatus[task.id].inProgress
-                ? "In Progress..."
-                : "Start Task"}
+              {taskStatus[task.id].completed ? "✔ Completed" : "Start Task"}
             </button>
           </div>
         ))}
