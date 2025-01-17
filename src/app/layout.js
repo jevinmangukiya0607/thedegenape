@@ -1,10 +1,10 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { headers } from "next/headers"; // Import headers to access cookies
+import ReduxProvider from "@/store/reduxProvider"; // Redux Provider component
+import ContextProvider from "@/context"; // ContextProvider component
 
 const inter = Inter({ subsets: ["latin"] });
-
-import { headers } from "next/headers";
-import ContextProvider from "@/context";
 
 export const metadata = {
   title: "AppKit Example App",
@@ -12,14 +12,16 @@ export const metadata = {
 };
 
 export default async function RootLayout({ children }) {
-  // Await headers() properly
-  const headersObj = await headers();
-  const cookies = headersObj.get("cookie");
+  // Extract headers and cookies asynchronously
+  const headersObj = await headers(); // Await the headers object
+  const cookies = headersObj.get("cookie"); // Safely get cookies
 
   return (
     <html lang="en">
       <body className={inter.className}>
-        <ContextProvider cookies={cookies}>{children}</ContextProvider>
+        <ReduxProvider>
+          <ContextProvider cookies={cookies}>{children}</ContextProvider>
+        </ReduxProvider>
       </body>
     </html>
   );
