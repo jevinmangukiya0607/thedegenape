@@ -15,31 +15,42 @@ export function ConnectButton() {
   const [showReferralPopup, setShowReferralPopup] = useState(false);
   const [referralCode, setReferralCode] = useState(["", "", "", ""]);
   const [error, setError] = useState("");
-  const { data: user, loading } = useSelector((state) => state.user);
+  const [fadeIn, setFadeIn] = useState(false);
+  const { data: user } = useSelector((state) => state.user);
 
-  // Sync wallet connection status and fetch user data
   useEffect(() => {
-    // Update wallet state in Redux
     dispatch(setWalletConnection({ isConnected, address }));
 
     if (isConnected && address) {
       dispatch(fetchUser(address)).then((action) => {
-        // Show referral popup if user is not found
         if (!action.payload) {
           setShowReferralPopup(true);
         }
       });
+
+      setFadeIn(true);
+    } else {
+      setFadeIn(false);
     }
   }, [isConnected, address, dispatch]);
 
   function handleConnect() {
-    modal.open(); // Open wallet modal
+    modal.open();
   }
 
-  // Handle keyboard navigation and input logic for referral code
+  function handleReferralInputChange(value, index) {
+    const updatedCode = [...referralCode];
+    updatedCode[index] = value.toUpperCase();
+    setReferralCode(updatedCode);
+
+    if (value && index < referralCode.length - 1) {
+      document.getElementById(`referral-input-${index + 1}`)?.focus();
+    }
+  }
+
   function handleKeyDown(e, index) {
     const key = e.key;
-    const maxIndex = 3; // Max length of the referral code
+    const maxIndex = referralCode.length - 1;
 
     if (key === "ArrowRight" && index < maxIndex) {
       document.getElementById(`referral-input-${index + 1}`)?.focus();
@@ -47,61 +58,60 @@ export function ConnectButton() {
       document.getElementById(`referral-input-${index - 1}`)?.focus();
     } else if (key === "Backspace" && index > 0 && !referralCode[index]) {
       const updatedCode = [...referralCode];
-      updatedCode[index - 1] = ""; // Clear the previous input
+      updatedCode[index - 1] = "";
       setReferralCode(updatedCode);
       document.getElementById(`referral-input-${index - 1}`)?.focus();
     }
   }
 
-  // Handle referral popup submission
   function handleReferralNext() {
-    const enteredCode = referralCode.join("").trim(); // Combine referral code
+    const enteredCode = referralCode.join("").trim();
 
     dispatch(
       createUser({
         walletAddress: address,
-        referredBy: enteredCode || "RKPO", // Use default referral code if none is entered
+        referredBy: enteredCode || "RKPO",
       })
     ).then((action) => {
       if (!action.error) {
-        setShowReferralPopup(false); // Close referral popup
+        setShowReferralPopup(false);
       } else {
-        setError("Invalid referral code."); // Show error message
+        setError("Invalid referral code.");
       }
     });
   }
 
-  // Trimmed wallet address: Show first 6 and last 4 characters
   const shortAddress = address
     ? `${address.slice(0, 6)}...${address.slice(-4)}`
     : "";
 
   return (
-    <div className="flex flex-col items-center gap-4">
-      {/* Show wallet connection status or connect button */}
+    <div className="flex flex-col items-center gap-2 sm:gap-3 md:gap-4">
       {isConnected ? (
-        <div className="flex items-center gap-2 px-4 py-2 bg-green-100 rounded-lg shadow">
-          <span className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></span>
-          <p className="text-lg font-bold text-green-700">{shortAddress}</p>
+        <div
+          className={`flex items-center gap-2 px-3 sm:px-4 py-1 sm:py-2 bg-green-100 rounded-lg shadow transition-opacity duration-500 ${
+            fadeIn ? "opacity-100" : "opacity-0"
+          }`}
+        >
+          <span className="w-2 sm:w-3 h-2 sm:h-3 bg-green-500 rounded-full animate-pulse"></span>
+          <p className="text-sm sm:text-base md:text-lg font-bold text-green-700">
+            {shortAddress}
+          </p>
         </div>
       ) : (
         <button
           onClick={handleConnect}
-          className="btn-connect w-full md:w-64 lg:w-[320px] lg:h-[55px] text-xl font-black text-[#163900] bg-[#d8f8bc] border-2 border-black rounded-lg shadow-md hover:brightness-110 transition"
-        >
-          CONNECT WALLET
-        </button>
+          className="w-40 sm:w-48 md:w-56 lg:w-64 h-10 sm:h-12 md:h-14 bg-cover bg-center hover:brightness-110 transition"
+          style={{
+            backgroundImage: "url('/img/connect.png')",
+          }}
+        ></button>
       )}
 
-      {/* Referral code popup */}
       {isConnected && showReferralPopup && (
         <ReferralCodePopup
           referralCode={referralCode}
-          handleReferralInputChange={(value, index) => {
-            const updatedCode = [...referralCode];
-            updatedCode[index] = value.toUpperCase(); // Convert input to uppercase
-            setReferralCode(updatedCode);
-          }}
+          handleReferralInputChange={handleReferralInputChange}
           handleKeyDown={handleKeyDown}
           handleReferralNext={handleReferralNext}
           error={error}

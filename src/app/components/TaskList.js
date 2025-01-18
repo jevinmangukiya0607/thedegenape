@@ -3,7 +3,10 @@ import TaskItem from "./TaskItem";
 
 export default function TaskList({ tasks, isConnected }) {
   return (
-    <div className="flex flex-col gap-4 w-full max-w-[100%] sm:max-w-2xl mx-auto">
+    <div
+      className="flex flex-col gap-4 sm:gap-6 md:gap-8 w-full max-w-[100%] sm:max-w-3xl mx-auto md:scale-110"
+      style={{ transition: "transform 0.3s ease" }} // Smooth transition
+    >
       {tasks.map((task) => (
         <TaskItem key={task.taskId} task={task} isConnected={isConnected} />
       ))}

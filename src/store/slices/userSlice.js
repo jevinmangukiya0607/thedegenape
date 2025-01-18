@@ -59,6 +59,8 @@ export const checkAllTasksComplete = createAsyncThunk(
   "user/checkAllTasksComplete",
   async (walletAddress, { rejectWithValue }) => {
     try {
+        console.log('initiated');
+        
       const response = await axios.post(`${API_BASE_URL}/${walletAddress}/tasks`);
       return response.data; // Returns { allTasksComplete: true/false }
     } catch (error) {

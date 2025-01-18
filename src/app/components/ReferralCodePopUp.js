@@ -8,8 +8,8 @@ export default function ReferralCodePopup({
   error,
 }) {
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center">
-      <div className="bg-gray-900 text-white p-6 rounded-lg shadow-lg w-96">
+    <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+      <div className="bg-gray-900 text-white p-6 rounded-lg shadow-lg w-96 relative z-50">
         <h2 className="text-xl font-semibold mb-4">Enter Referral Code</h2>
         <div className="flex justify-between mb-4">
           {[0, 1, 2, 3].map((index) => (
@@ -17,7 +17,7 @@ export default function ReferralCodePopup({
               key={index}
               id={`referral-input-${index}`}
               type="text"
-              maxLength={1} // Restrict input to 1 character
+              maxLength={1}
               value={referralCode[index] || ""}
               onChange={(e) => handleReferralInputChange(e.target.value, index)}
               onKeyDown={(e) => handleKeyDown(e, index)}

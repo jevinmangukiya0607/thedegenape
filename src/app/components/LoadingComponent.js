@@ -17,8 +17,6 @@ export default function LoadingComponent() {
             className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 border-4 rounded-full animate-spin"
             style={{
               borderColor: "transparent transparent #deb887 #deb887", // Wood texture-inspired color
-              background: "url('/img/wood-texture.png')", // Replace with your wood texture image
-              backgroundSize: "cover",
             }}
           ></div>
         </div>
@@ -29,7 +27,6 @@ export default function LoadingComponent() {
           style={{
             color: "#deb887", // Wood texture color
             textShadow: "1px 1px 2px rgba(0, 0, 0, 0.7)",
-            background: "url('/img/wood-texture.png')", // Replace with your wood texture image
             backgroundClip: "text",
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",

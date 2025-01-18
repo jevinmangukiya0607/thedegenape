@@ -1,23 +1,33 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { updateUserTaskStatus, addPoints } from "@/store/slices/userSlice";
+import { updateUserTaskStatus, addPoints,checkAllTasksComplete } from "@/store/slices/userSlice";
+import AllTasksCompletedPopup from "./TaskCompletePopup";
+import NotificationPopup from "./NotificationPopup";
 
 export default function TaskItem({ task, isConnected }) {
   const { address: walletAddress } = useSelector((state) => state.wallet);
-  const userTasks = useSelector((state) => state.user.data.tasks);
+  const user = useSelector((state) => state.user.data);
+  const userTasks = user.tasks;
   const dispatch = useDispatch();
 
   const isTaskCompleted =
     userTasks.find((t) => t.taskId.taskId === task.taskId)?.status || false;
 
   const [localCompleted, setLocalCompleted] = useState(isTaskCompleted);
+  const [showNotification, setShowNotification] = useState(false);
+  const [showNewNotification, setShowNewNotification] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
 
   useEffect(() => {
     setLocalCompleted(isTaskCompleted);
   }, [isTaskCompleted]);
 
   const handleTaskClick = async () => {
-    if (!isConnected || !walletAddress) return;
+    if (!isConnected || !walletAddress) {
+      setShowNotification(true);
+      setTimeout(() => setShowNotification(false), 3000);
+      return;
+    }
 
     try {
       window.open(task.url, "_blank");
@@ -42,6 +52,17 @@ export default function TaskItem({ task, isConnected }) {
           console.error("Error updating task:", error);
           setLocalCompleted(false);
         }
+
+        // **Delay the allTasksComplete check by 2 seconds**
+            
+            const result = await dispatch(checkAllTasksComplete(user.walletAddress));
+            const data = result.payload;
+            console.log('data',data)
+          if (data.allTasksComplete) {
+            setShowNewNotification(true);
+            setShowPopup(true);
+          }
+        
       }, 5000);
     } catch (error) {
       console.error("Error handling task click:", error);
@@ -49,31 +70,66 @@ export default function TaskItem({ task, isConnected }) {
   };
 
   return (
-    <div className="bg-[#e5c08d] shadow-lg border-2 border-black p-2 lg:p-4 flex flex-col items-center sm:flex-row sm:justify-between gap-2 lg:gap-4 text-center sm:text-left lg:max-w-4xl">
+    <div
+      className="flex flex-col sm:flex-row items-center justify-between px-4 py-2 pb-0 gap-4 w-full bg-no-repeat bg-center bg-cover"
+      style={{
+        borderRadius: "10px",
+        height: "100px",
+        backgroundImage: "url('/img/rectangle.png')",
+        backgroundSize: "cover",
+      }}
+    >
       {/* Task Name */}
-      <h2 className="text-xs sm:text-sm lg:text-lg xl:text-xl font-bold text-black">
+      <h2
+        className="font-bold text-center sm:text-left text-sm sm:text-base md:text-lg"
+        style={{
+          color: "#A45737",
+          lineHeight: "1.5rem",
+        }}
+      >
         {task.name}
       </h2>
 
       {/* Task Points */}
-      <p className="text-xs sm:text-sm lg:text-lg xl:text-xl font-bold text-black">
+      <p
+        className="font-bold text-center sm:text-left text-xs sm:text-sm md:text-base"
+        style={{
+          color: "#A45737",
+          lineHeight: "1.25rem",
+        }}
+      >
         Points: {task.points}
       </p>
 
       {/* Task Button */}
       <button
         onClick={handleTaskClick}
-        className={`w-full sm:w-auto lg:w-1/3 px-2 lg:px-4 py-1 lg:py-2 text-xs sm:text-sm lg:text-base xl:text-lg border-2 border-black font-bold text-black transition-all ${
-          localCompleted
-            ? "bg-gray-400 cursor-not-allowed"
-            : isConnected
-            ? "bg-[#d8f8bc] hover:brightness-110"
-            : "bg-gray-400 cursor-not-allowed"
+        className={`flex justify-center items-center mb-1 md:w-[118px] md:h-[48px] w-[80px] h-[40px] rounded-md bg-center bg-cover ${
+          localCompleted ? "cursor-not-allowed opacity-50" : ""
         }`}
-        disabled={localCompleted || !isConnected}
+        style={{
+          backgroundImage: localCompleted
+            ? "url('/img/complete.png')"
+            : "url('/img/start.png')",
+        }}
+        disabled={localCompleted}
       >
-        {localCompleted ? "✔ Completed" : "START TASK"}
+        <span className="sr-only">
+          {localCompleted ? "Completed" : "Start Task"}
+        </span>
       </button>
+
+      {/* Notification */}
+      {showNotification && (
+        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-4 py-2 rounded-md shadow-lg z-50">
+          Please connect your wallet to start the task.
+        </div>
+      )}
+
+      {/* Task Completion Popup */}
+      {showPopup && (
+        <AllTasksCompletedPopup onClose={() => setShowPopup(false)} />
+      )}
     </div>
   );
 }
