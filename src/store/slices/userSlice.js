@@ -54,6 +54,22 @@ export const addPoints = createAsyncThunk(
   }
 );
 
+// Thunk to check if all tasks are complete
+export const checkAllTasksComplete = createAsyncThunk(
+  "user/checkAllTasksComplete",
+  async (walletAddress, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(
+        `${API_BASE_URL}/${walletAddress}/taskS`
+      );
+      return response.data; // Returns { allTasksComplete: true/false }
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+
+
 // Thunk to update user's task status
 export const updateUserTaskStatus = createAsyncThunk(
   "user/updateUserTaskStatus",
@@ -102,6 +118,7 @@ const userSlice = createSlice({
       tasks: [],
       walletAddress: "",
       points: 0,
+      allTasksComplete: false,
     },
     loading: false,
     error: null,
@@ -113,6 +130,7 @@ const userSlice = createSlice({
         tasks: [],
         walletAddress: "",
         points: 0,
+        allTasksComplete: false,
       };
       state.loading = false;
       state.error = null;
@@ -186,6 +204,20 @@ const userSlice = createSlice({
       state.data.tasks = action.payload.tasks || []; // Update tasks
     });
     builder.addCase(updateUserTaskStatus.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    });
+
+    // Handle checkAllTasksComplete
+    builder.addCase(checkAllTasksComplete.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+    builder.addCase(checkAllTasksComplete.fulfilled, (state, action) => {
+      state.loading = false;
+      state.data.allTasksComplete = action.payload.allTasksComplete;
+    });
+    builder.addCase(checkAllTasksComplete.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload;
     });

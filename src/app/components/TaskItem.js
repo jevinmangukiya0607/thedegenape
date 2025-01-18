@@ -18,34 +18,45 @@ export default function TaskItem({ task, isConnected }) {
     setLocalCompleted(isTaskCompleted);
   }, [isTaskCompleted]);
 
-  const handleTaskClick = async () => {
-    if (!isConnected || !walletAddress) return;
+const handleTaskClick = async () => {
+  if (!isConnected || !walletAddress) return;
 
-    try {
+  try {
+    // Redirect the user to the task's URL
+    window.open(task.url, "_blank");
+
+    // Simulate task completion after 5 seconds
+    setTimeout(async () => {
       // Optimistically mark task as completed
       setLocalCompleted(true);
 
-      // Update task completion in the backend
-      const response = await dispatch(
-        updateUserTaskStatus({
-          walletAddress,
-          taskId: task.taskId,
-        })
-      );
+      try {
+        // Update task completion in the backend
+        const response = await dispatch(
+          updateUserTaskStatus({
+            walletAddress,
+            taskId: task.taskId,
+          })
+        );
 
-      if (response.meta.requestStatus === "fulfilled") {
-        // Add points for the task if the update was successful
-        await dispatch(addPoints({ walletAddress, points: task.points }));
-      } else {
-        throw new Error("Task update failed");
+        if (response.meta.requestStatus === "fulfilled") {
+          // Add points for the task if the update was successful
+          await dispatch(addPoints({ walletAddress, points: task.points }));
+        } else {
+          throw new Error("Task update failed");
+        }
+      } catch (error) {
+        console.error("Error updating task:", error);
+
+        // Revert task completion on failure
+        setLocalCompleted(false);
       }
-    } catch (error) {
-      console.error("Error updating task:", error);
+    }, 5000); // 5-second delay
+  } catch (error) {
+    console.error("Error handling task click:", error);
+  }
+};
 
-      // Revert task completion on failure
-      setLocalCompleted(false);
-    }
-  };
 
   return (
     <div className="bg-[#e5c08d] shadow-lg border-2 border-black p-4 flex items-center justify-between">
