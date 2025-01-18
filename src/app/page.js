@@ -1,4 +1,4 @@
-"use client";
+'use client'
 
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
@@ -30,24 +30,26 @@ export default function Home() {
   }, [dispatch]);
 
   useEffect(() => {
-    // Check if all tasks are completed using the API
+    // Fetch the task completion status when the user connects
+    if (user.walletAddress) {
+      dispatch(checkAllTasksComplete(user.walletAddress));
+    }
+  }, [dispatch, user.walletAddress]);
+
+  useEffect(() => {
+    // Watch for changes in task completion and the oneTimeTask field
     const isPopupShown = localStorage.getItem("popupShown");
 
-    if (user.walletAddress) {
-      dispatch(checkAllTasksComplete(user.walletAddress)).then((result) => {
-        if (result.payload?.allTasksComplete) {
-          setReferralCode(user.referralCode); // Set referral code from user data
+    if (user.allTasksComplete) {
+      setReferralCode(user.referralCode); // Set referral code from user data
 
-          // Show the popup and notification only if they haven't been displayed before
-          if (!isPopupShown) {
-            setShowNotification(true);
-            setShowPopup(true);
-            localStorage.setItem("popupShown", "true"); // Mark popup as shown
-          }
-        }
-      });
+      if (!user.oneTimeTask && !isPopupShown) {
+        setShowNotification(true);
+        setShowPopup(true);
+        localStorage.setItem("popupShown", "true"); // Mark popup as shown
+      }
     }
-  }, [dispatch, user.walletAddress, user.referralCode]);
+  }, [user.allTasksComplete, user.oneTimeTask, user.referralCode]);
 
   const totalPoints = user.points || 0;
 

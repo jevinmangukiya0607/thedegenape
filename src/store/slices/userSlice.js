@@ -59,15 +59,14 @@ export const checkAllTasksComplete = createAsyncThunk(
   "user/checkAllTasksComplete",
   async (walletAddress, { rejectWithValue }) => {
     try {
-      const response = await axios.get(
-        `${API_BASE_URL}/${walletAddress}/taskS`
-      );
+      const response = await axios.post(`${API_BASE_URL}/${walletAddress}/tasks`);
       return response.data; // Returns { allTasksComplete: true/false }
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
     }
   }
 );
+
 
 
 // Thunk to update user's task status
@@ -207,8 +206,7 @@ const userSlice = createSlice({
       state.loading = false;
       state.error = action.payload;
     });
-
-    // Handle checkAllTasksComplete
+//check all tasks are complete 
     builder.addCase(checkAllTasksComplete.pending, (state) => {
       state.loading = true;
       state.error = null;
