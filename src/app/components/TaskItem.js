@@ -2,7 +2,11 @@ import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { updateUserTaskStatus, addPoints,checkAllTasksComplete } from "@/store/slices/userSlice";
 import AllTasksCompletedPopup from "./TaskCompletePopup";
-import NotificationPopup from "./NotificationPopup";
+import {
+  isTaskNameRelatedToThreadOrComment,
+  generateCustomPostUrl,
+  generateCustomMessage,
+} from "@/utils/twitter";
 
 export default function TaskItem({ task, isConnected }) {
   const { address: walletAddress } = useSelector((state) => state.wallet);
@@ -25,12 +29,33 @@ export default function TaskItem({ task, isConnected }) {
   const handleTaskClick = async () => {
     if (!isConnected || !walletAddress) {
       setShowNotification(true);
-      setTimeout(() => setShowNotification(false), 3000);
+      setTimeout(() => setShowNotification(false), 2000);
       return;
     }
 
     try {
-      window.open(task.url, "_blank");
+         let taskUrl = task.url;
+        if (isTaskNameRelatedToThreadOrComment(task.name)) {
+          console.log(
+            "[Step 2] Task name is related to 'thread' or 'comment'. Proceeding to generate a custom URL."
+          );
+
+          const referralCode = user.referralCode || "defaultCode"; // Example: Retrieve the referral code from user data
+          console.log("[Step 3] Referral code:", referralCode);
+
+          const customMessage = generateCustomMessage(referralCode);
+          console.log("[Step 4] Generated custom message:", customMessage);
+
+          taskUrl = generateCustomPostUrl(task.url, customMessage);
+          console.log("[Step 5] Generated custom task URL:", taskUrl);
+        } else {
+          console.log(
+            "[Step 2] Task name is NOT related to 'thread' or 'comment'. Using the original URL."
+          );
+        }
+
+        console.log("[Step 6] Opening task URL in a new tab:", taskUrl);
+        window.open(taskUrl, "_blank");
 
       setTimeout(async () => {
         setLocalCompleted(true);
