@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { updateUserTaskStatus, addPoints,checkAllTasksComplete } from "@/store/slices/userSlice";
+import {
+  updateUserTaskStatus,
+  addPoints,
+  checkAllTasksComplete,
+} from "@/store/slices/userSlice";
 import AllTasksCompletedPopup from "./TaskCompletePopup";
 import {
   isTaskNameRelatedToThreadOrComment,
@@ -34,28 +38,14 @@ export default function TaskItem({ task, isConnected }) {
     }
 
     try {
-         let taskUrl = task.url;
-        if (isTaskNameRelatedToThreadOrComment(task.name)) {
-          console.log(
-            "[Step 2] Task name is related to 'thread' or 'comment'. Proceeding to generate a custom URL."
-          );
+      let taskUrl = task.url;
+      if (isTaskNameRelatedToThreadOrComment(task.name)) {
+        const referralCode = user.referralCode || "defaultCode"; // Example: Retrieve the referral code from user data
+        const customMessage = generateCustomMessage(referralCode);
+        taskUrl = generateCustomPostUrl(task.url, customMessage);
+      }
 
-          const referralCode = user.referralCode || "defaultCode"; // Example: Retrieve the referral code from user data
-          console.log("[Step 3] Referral code:", referralCode);
-
-          const customMessage = generateCustomMessage(referralCode);
-          console.log("[Step 4] Generated custom message:", customMessage);
-
-          taskUrl = generateCustomPostUrl(task.url, customMessage);
-          console.log("[Step 5] Generated custom task URL:", taskUrl);
-        } else {
-          console.log(
-            "[Step 2] Task name is NOT related to 'thread' or 'comment'. Using the original URL."
-          );
-        }
-
-        console.log("[Step 6] Opening task URL in a new tab:", taskUrl);
-        window.open(taskUrl, "_blank");
+      window.open(taskUrl, "_blank");
 
       setTimeout(async () => {
         setLocalCompleted(true);
@@ -74,20 +64,18 @@ export default function TaskItem({ task, isConnected }) {
             throw new Error("Task update failed");
           }
         } catch (error) {
-          console.error("Error updating task:", error);
           setLocalCompleted(false);
         }
 
-        // **Delay the allTasksComplete check by 2 seconds**
-            
-            const result = await dispatch(checkAllTasksComplete(user.walletAddress));
-            const data = result.payload;
-            console.log('data',data)
-          if (data.allTasksComplete) {
-            setShowNewNotification(true);
-            setShowPopup(true);
-          }
-        
+        // Delay the allTasksComplete check by 2 seconds
+        const result = await dispatch(
+          checkAllTasksComplete(user.walletAddress)
+        );
+        const data = result.payload;
+        if (data.allTasksComplete) {
+          setShowNewNotification(true);
+          setShowPopup(true);
+        }
       }, 5000);
     } catch (error) {
       console.error("Error handling task click:", error);

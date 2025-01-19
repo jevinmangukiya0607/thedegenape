@@ -27,13 +27,12 @@ export const fetchUser = createAsyncThunk(
   async (walletAddress, { rejectWithValue }) => {
     try {
       const response = await axios.get(`${API_BASE_URL}/${walletAddress}`);
-      return response.data; // User exists, return data
+      return response.data;
     } catch (error) {
       if (error.response && error.response.status === 404) {
-        // User not found, handle 404 explicitly
         return null; // Return null to indicate user not found
       }
-      return rejectWithValue(error.response.data); // Handle other errors
+      return rejectWithValue(error.response.data);
     }
   }
 );
@@ -59,17 +58,15 @@ export const checkAllTasksComplete = createAsyncThunk(
   "user/checkAllTasksComplete",
   async (walletAddress, { rejectWithValue }) => {
     try {
-        console.log('initiated');
-        
-      const response = await axios.post(`${API_BASE_URL}/${walletAddress}/tasks`);
+      const response = await axios.post(
+        `${API_BASE_URL}/${walletAddress}/tasks`
+      );
       return response.data; // Returns { allTasksComplete: true/false }
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
     }
   }
 );
-
-
 
 // Thunk to update user's task status
 export const updateUserTaskStatus = createAsyncThunk(
@@ -81,35 +78,17 @@ export const updateUserTaskStatus = createAsyncThunk(
         taskId,
       };
 
-      console.log("Payload being sent to API:", payload);
-
-      // Log the API URL
-      console.log("API Endpoint:", `${API_BASE_URL}/tasks/update`);
-
       const response = await axios.patch(
         `${API_BASE_URL}/tasks/update`,
         payload
       );
 
-      // Log the successful response
-      console.log("API Response:", response.data);
-
       return response.data;
     } catch (error) {
-      // Log detailed error information
-      console.error("Error in updateUserTaskStatus:", {
-        message: error.message,
-        stack: error.stack,
-        response: error.response?.data,
-        status: error.response?.status,
-      });
-
       return rejectWithValue(error.response?.data || error.message);
     }
   }
 );
-
-
 
 const userSlice = createSlice({
   name: "user",
@@ -160,7 +139,6 @@ const userSlice = createSlice({
     builder.addCase(fetchUser.fulfilled, (state, action) => {
       state.loading = false;
       if (action.payload) {
-        // Populate the state with fetched data
         state.data = {
           referralCode: action.payload.referralCode || "",
           tasks: action.payload.tasks || [],
@@ -168,7 +146,6 @@ const userSlice = createSlice({
           points: action.payload.points || 0,
         };
       } else {
-        // Handle case where user is not found
         state.data = {
           referralCode: "",
           tasks: [],
@@ -189,7 +166,7 @@ const userSlice = createSlice({
     });
     builder.addCase(addPoints.fulfilled, (state, action) => {
       state.loading = false;
-      state.data.points = action.payload.points; // Update points
+      state.data.points = action.payload.points;
     });
     builder.addCase(addPoints.rejected, (state, action) => {
       state.loading = false;
@@ -202,13 +179,14 @@ const userSlice = createSlice({
     });
     builder.addCase(updateUserTaskStatus.fulfilled, (state, action) => {
       state.loading = false;
-      state.data.tasks = action.payload.tasks || []; // Update tasks
+      state.data.tasks = action.payload.tasks || [];
     });
     builder.addCase(updateUserTaskStatus.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload;
     });
-//check all tasks are complete 
+
+    // Handle checkAllTasksComplete
     builder.addCase(checkAllTasksComplete.pending, (state) => {
       state.loading = true;
       state.error = null;
