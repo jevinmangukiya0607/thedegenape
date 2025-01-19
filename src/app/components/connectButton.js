@@ -1,7 +1,11 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useAppKit, useAppKitAccount } from "@reown/appkit/react";
+import {
+  useAppKit,
+  useAppKitAccount,
+  useDisconnect,
+} from "@reown/appkit/react";
 import { useDispatch, useSelector } from "react-redux";
 import { createUser, fetchUser } from "@/store/slices/userSlice";
 import ReferralCodePopup from "./ReferralCodePopUp";
@@ -10,6 +14,7 @@ import { setWalletConnection } from "@/store/slices/walletSlice";
 export function ConnectButton() {
   const modal = useAppKit();
   const { address, isConnected } = useAppKitAccount();
+  const { disconnect } = useDisconnect();
   const dispatch = useDispatch();
 
   const [showReferralPopup, setShowReferralPopup] = useState(false);
@@ -18,6 +23,7 @@ export function ConnectButton() {
   const [fadeIn, setFadeIn] = useState(false);
   const { data: user } = useSelector((state) => state.user);
 
+  // Handle the connection and disconnection
   useEffect(() => {
     dispatch(setWalletConnection({ isConnected, address }));
 
@@ -30,14 +36,40 @@ export function ConnectButton() {
 
       setFadeIn(true);
     } else {
+      // Clear cookies
+     
       setFadeIn(false);
     }
   }, [isConnected, address, dispatch]);
 
+  // Trigger modal to connect
   function handleConnect() {
     modal.open();
   }
 
+  // Trigger disconnect behavior
+  const handleDisconnect = async () => {
+    await disconnect(); // Disconnect the wallet
+
+    // Clear cookies
+    document.cookie
+      .split(";")
+      .forEach(
+        (cookie) =>
+          (document.cookie = `${cookie
+            .split("=")[0]
+            .trim()}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/`)
+      );
+
+    // Clear localStorage and sessionStorage
+    localStorage.clear();
+    sessionStorage.clear();
+
+    // Refresh the page to reset the app
+    window.location.reload();
+  };
+
+  // Referral code handling logic
   function handleReferralInputChange(value, index) {
     const updatedCode = [...referralCode];
     updatedCode[index] = value.toUpperCase();
@@ -88,22 +120,25 @@ export function ConnectButton() {
   return (
     <div className="flex flex-col items-center gap-2 sm:gap-3 md:gap-4">
       {isConnected ? (
-        <div
-          className={`flex items-center gap-2 px-3 sm:px-4 py-1 sm:py-2 bg-customGreen rounded-lg shadow transition-opacity duration-500 ${
-            fadeIn ? "opacity-100" : "opacity-0"
-          }`}
-        >
-          <span className="w-2 sm:w-3 h-2 sm:h-3 bg-green-500 rounded-full animate-pulse"></span>
-          <p className="text-sm sm:text-base md:text-lg font-bold text-[#0D2C16]">
-            {shortAddress}
-          </p>
-        </div>
+        <>
+          <div
+            className={`flex items-center gap-2 px-3 sm:px-4 py-1 sm:py-2 bg-customGreen rounded-lg shadow transition-opacity duration-500 ${
+              fadeIn ? "opacity-100" : "opacity-0"
+            }`}
+            onClick={handleDisconnect}
+          >
+            <span className="w-2 sm:w-3 h-2 sm:h-3 bg-green-500 rounded-full animate-pulse"></span>
+            <p className="text-sm sm:text-base md:text-lg font-bold text-[#0D2C16]">
+              {shortAddress}
+            </p>
+          </div>
+        </>
       ) : (
         <button
           onClick={handleConnect}
-          className="w-40 sm:w-48 md:w-56 lg:w-64 h-10 sm:h-12 md:h-14 bg-[#A45737] text-white rounded hover:brightness-110 transition"
+          className="w-[120px] sm:w-[160px] md:w-[200px] lg:w-[240px] h-10 sm:h-12 md:h-14 bg-[#A45737] text-white text-sm sm:text-base md:text-lg font-semibold rounded-[50px] hover:brightness-110 transition"
         >
-          Connect
+          Connect Wallet
         </button>
       )}
 

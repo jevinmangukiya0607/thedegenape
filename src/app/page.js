@@ -65,9 +65,11 @@ export default function Home() {
 
         {/* Referral Code (Shown only if all tasks are completed) */}
         {allTasksCompleted && (
-          <div className="bg-yellow-200 text-yellow-800 px-4 py-2 rounded-lg text-center font-semibold text-xs sm:text-sm md:text-base mb-6">
+          <div className="bg-yellow-200 text-yellow-800 px-6 py-4 rounded-lg text-center font-semibold text-sm sm:text-lg md:text-xl mb-8">
             🎉 Your Referral Code:{" "}
-            <span className="font-bold">{referralCode}</span>
+            <span className="font-bold text-lg sm:text-xl md:text-2xl">
+              {referralCode}
+            </span>
           </div>
         )}
 
