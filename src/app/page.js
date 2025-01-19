@@ -40,24 +40,32 @@ export default function Home() {
         {/* Header */}
         <h1
           className="font-bold text-base sm:text-xl md:text-2xl lg:text-4xl mb-6 text-center"
-          style={{ color: "#A45637" }}
+          style={{ color: "#EBBC78" }}
         >
           Early OG Rewards
         </h1>
 
         {/* Total Points */}
         <div
-          className="flex justify-center items-center text-center font-bold mb-6 text-lg sm:text-xl md:text-2xl"
+          className="flex justify-center items-center text-center font-regular text-lg "
           style={{
-            color: "#A45637",
+            color: "#EBBC78",
           }}
         >
-          Total Points: {totalPoints}
+          Total Points:
+        </div>
+        <div
+          className="flex justify-center items-center text-center font-bold  text-lg sm:text-xl md:text-2xl"
+          style={{
+            color: "#EBBC78",
+          }}
+        >
+          {totalPoints}
         </div>
 
         {/* Referral Code (Shown only if all tasks are completed) */}
         {allTasksCompleted && (
-          <div className="bg-yellow-200 text-yellow-800 px-4 py-2 rounded-lg text-center font-semibold text-xs sm:text-sm md:text-base">
+          <div className="bg-yellow-200 text-yellow-800 px-4 py-2 rounded-lg text-center font-semibold text-xs sm:text-sm md:text-base mb-6">
             🎉 Your Referral Code:{" "}
             <span className="font-bold">{referralCode}</span>
           </div>

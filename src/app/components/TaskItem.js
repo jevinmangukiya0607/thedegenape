@@ -71,12 +71,12 @@ export default function TaskItem({ task, isConnected }) {
 
   return (
     <div
-      className="flex flex-col sm:flex-row items-center justify-between px-4 py-2 pb-0 gap-4 w-full bg-no-repeat bg-center bg-cover"
+      className="flex flex-col sm:flex-row items-center justify-between px-4 py-2 pb-0 gap-4 w-full bg-no-repeat bg-center bg-cover sm:h-[100px]"
       style={{
         borderRadius: "10px",
-        height: "100px",
         backgroundImage: "url('/img/rectangle.png')",
         backgroundSize: "cover",
+        padding: "20px",
       }}
     >
       {/* Task Name */}

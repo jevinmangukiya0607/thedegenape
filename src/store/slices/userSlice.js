@@ -3,8 +3,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL || "https://backend-l555.onrender.com";
+const API_BASE_URL = "https://backend-l555.onrender.com/users";
 
 // Thunk to create a new user
 export const createUser = createAsyncThunk(
