@@ -30,3 +30,20 @@ appkit-button {
   font-size: 16px;
   cursor: pointer;
 }
+
+.container {
+  /* Default margin for smaller screens */
+  margin-top: calc(5vh); /* 5% of viewport height */
+}
+
+@media (min-width: 640px) { /* Small screens (sm) */
+  .container {
+    margin-top: calc(8vh); /* Slightly larger margin for taller screens */
+  }
+}
+
+@media (min-width: 1024px) { /* Large screens (lg) */
+  .container {
+    margin-top: calc(10vh); /* Larger margin for big screens */
+  }
+}

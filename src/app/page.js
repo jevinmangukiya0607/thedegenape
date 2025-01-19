@@ -27,19 +27,22 @@ export default function Home() {
 
   return (
     <div
-      className="h-screen w-full flex flex-col items-center justify-center bg-cover bg-center sm:bg-[url('/img/bg.png')] sm:bg-[375px_300px] px-2 sm:px-4"
+      className="h-screen w-full overflow-y-auto bg-cover bg-center px-2 sm:px-4"
       style={{
         backgroundImage: "url('/img/bg.png')",
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
     >
-      <div className="flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 gap-4 w-full max-w-[100%]">
-        <ConnectButton />
+      <div className="flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 gap-6 sm:gap-8 w-full max-w-[100%] min-h-full mt-8 sm:mt-12">
+        {/* Connect Button */}
+        <div className="mt-4 sm:mt-6">
+          <ConnectButton />
+        </div>
 
         {/* Header */}
         <h1
-          className="font-bold text-base sm:text-xl md:text-2xl lg:text-4xl mb-6 text-center"
+          className="font-bold text-base sm:text-xl md:text-2xl lg:text-4xl text-center mt-6 sm:mt-8"
           style={{ color: "#EBBC78" }}
         >
           Early OG Rewards
@@ -47,7 +50,7 @@ export default function Home() {
 
         {/* Total Points */}
         <div
-          className="flex justify-center items-center text-center font-regular text-lg "
+          className="flex justify-center items-center text-center font-regular text-lg mt-4"
           style={{
             color: "#EBBC78",
           }}
@@ -55,7 +58,7 @@ export default function Home() {
           Total Points:
         </div>
         <div
-          className="flex justify-center items-center text-center font-bold  text-lg sm:text-xl md:text-2xl"
+          className="flex justify-center items-center text-center font-bold text-lg sm:text-xl md:text-2xl"
           style={{
             color: "#EBBC78",
           }}
@@ -65,7 +68,7 @@ export default function Home() {
 
         {/* Referral Code (Shown only if all tasks are completed) */}
         {allTasksCompleted && (
-          <div className="bg-yellow-200 text-yellow-800 px-6 py-4 rounded-lg text-center font-semibold text-sm sm:text-lg md:text-xl mb-8">
+          <div className="bg-yellow-200 text-yellow-800 px-6 py-4 rounded-lg text-center font-semibold text-sm sm:text-lg md:text-xl mt-6 sm:mt-8">
             🎉 Your Referral Code:{" "}
             <span className="font-bold text-lg sm:text-xl md:text-2xl">
               {referralCode}
@@ -74,7 +77,9 @@ export default function Home() {
         )}
 
         {/* Task List */}
-        <TaskList tasks={tasks} isConnected={isConnected} />
+        <div className="mt-8 sm:mt-10 w-full">
+          <TaskList tasks={tasks} isConnected={isConnected} />
+        </div>
       </div>
     </div>
   );
