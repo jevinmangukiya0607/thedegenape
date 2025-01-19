@@ -89,23 +89,22 @@ export function ConnectButton() {
     <div className="flex flex-col items-center gap-2 sm:gap-3 md:gap-4">
       {isConnected ? (
         <div
-          className={`flex items-center gap-2 px-3 sm:px-4 py-1 sm:py-2 bg-green-100 rounded-lg shadow transition-opacity duration-500 ${
+          className={`flex items-center gap-2 px-3 sm:px-4 py-1 sm:py-2 bg-customGreen rounded-lg shadow transition-opacity duration-500 ${
             fadeIn ? "opacity-100" : "opacity-0"
           }`}
         >
           <span className="w-2 sm:w-3 h-2 sm:h-3 bg-green-500 rounded-full animate-pulse"></span>
-          <p className="text-sm sm:text-base md:text-lg font-bold text-green-700">
+          <p className="text-sm sm:text-base md:text-lg font-bold text-[#0D2C16]">
             {shortAddress}
           </p>
         </div>
       ) : (
         <button
           onClick={handleConnect}
-          className="w-40 sm:w-48 md:w-56 lg:w-64 h-10 sm:h-12 md:h-14 bg-cover bg-center hover:brightness-110 transition"
-          style={{
-            backgroundImage: "url('/img/connect.png')",
-          }}
-        ></button>
+          className="w-40 sm:w-48 md:w-56 lg:w-64 h-10 sm:h-12 md:h-14 bg-[#A45737] text-white rounded hover:brightness-110 transition"
+        >
+          Connect
+        </button>
       )}
 
       {isConnected && showReferralPopup && (

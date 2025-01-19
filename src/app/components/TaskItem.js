@@ -105,7 +105,7 @@ export default function TaskItem({ task, isConnected }) {
       <button
         onClick={handleTaskClick}
         className={`flex justify-center items-center mb-1 md:w-[118px] md:h-[48px] w-[80px] h-[40px] rounded-md bg-center bg-cover ${
-          localCompleted ? "cursor-not-allowed opacity-50" : ""
+          localCompleted ? "cursor-not-allowed opacity-90" : ""
         }`}
         style={{
           backgroundImage: localCompleted
