@@ -11,6 +11,6 @@ export const generateCustomPostUrl = (baseUrl, customMessage) => {
 };
 
 export const generateCustomMessage = (referralCode) => {
-  const domain = "degenapes";
+  const domain = "rewards.thedegenape.xyz";
   return `Swing into the alpha jungle 🐒🌴\n\nUse my code: ${referralCode}\n\n👉 ${domain}`;
 };
