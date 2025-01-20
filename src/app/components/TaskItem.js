@@ -84,53 +84,56 @@ export default function TaskItem({ task, isConnected }) {
 
   return (
     <div
-      className="flex flex-col sm:flex-row items-center justify-between px-4 py-2 pb-0 gap-4 w-full bg-no-repeat bg-center bg-cover sm:h-[100px]"
+      className="flex flex-row items-center justify-between px-4 py-4 gap-4 w-full bg-no-repeat bg-center bg-cover sm:h-[100px]"
       style={{
         borderRadius: "10px",
         backgroundImage: "url('/img/rectangle.png')",
         backgroundSize: "cover",
-        padding: "20px",
       }}
     >
       {/* Task Name */}
-      <h2
-        className="font-bold text-center sm:text-left text-sm sm:text-base md:text-lg"
+      <div
+        className="flex-1 max-w-[50%] text-ellipsis overflow-hidden whitespace-nowrap"
         style={{
           color: "#A45737",
-          lineHeight: "1.5rem",
         }}
       >
-        {task.name}
-      </h2>
+        <h2 className="font-bold text-sm sm:text-base md:text-lg">
+          {task.name}
+        </h2>
+      </div>
 
       {/* Task Points */}
-      <p
-        className="font-bold text-center sm:text-left text-xs sm:text-sm md:text-base"
+      <div
+        className="flex-1 text-center"
         style={{
           color: "#A45737",
-          lineHeight: "1.25rem",
         }}
       >
-        Points: {task.points}
-      </p>
+        <p className="font-bold text-xs sm:text-sm md:text-base">
+          Points: {task.points}
+        </p>
+      </div>
 
       {/* Task Button */}
-      <button
-        onClick={handleTaskClick}
-        className={`flex justify-center items-center mb-1 md:w-[118px] md:h-[48px] w-[80px] h-[40px] rounded-md bg-center bg-cover ${
-          localCompleted ? "cursor-not-allowed opacity-90" : ""
-        }`}
-        style={{
-          backgroundImage: localCompleted
-            ? "url('/img/complete.png')"
-            : "url('/img/start.png')",
-        }}
-        disabled={localCompleted}
-      >
-        <span className="sr-only">
-          {localCompleted ? "Completed" : "Start Task"}
-        </span>
-      </button>
+      <div className="flex-1 flex justify-end">
+        <button
+          onClick={handleTaskClick}
+          className={`flex justify-center items-center w-[80px] h-[40px] sm:w-[118px] sm:h-[48px] rounded-md bg-center bg-cover ${
+            localCompleted ? "cursor-not-allowed opacity-90" : ""
+          }`}
+          style={{
+            backgroundImage: localCompleted
+              ? "url('/img/complete.png')"
+              : "url('/img/start.png')",
+          }}
+          disabled={localCompleted}
+        >
+          <span className="sr-only">
+            {localCompleted ? "Completed" : "Start Task"}
+          </span>
+        </button>
+      </div>
 
       {/* Notification */}
       {showNotification && (

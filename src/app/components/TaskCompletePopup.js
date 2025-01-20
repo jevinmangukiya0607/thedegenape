@@ -11,7 +11,7 @@ export default function AllTasksCompletedPopup({ onClose }) {
   const [step, setStep] = useState(0); // Tracks the current step (0, 1, 2)
   const [isLoading, setIsLoading] = useState(true); // Show loader during processing
   const [showFinalMessage, setShowFinalMessage] = useState(false); // Show final message
-  const stepPoints = [100, 200, 1600]; // Points for each step
+  const stepPoints = [50, 50, 50]; // Points for each step
 
   useEffect(() => {
     if (!user?.walletAddress) return;
