@@ -34,7 +34,7 @@ export default function AllTasksCompletedPopup({ onClose }) {
 
   useEffect(() => {
     if (!isLoading && step === 2) {
-      dispatch(addPoints({ walletAddress: user.walletAddress, points: 1900 }))
+      dispatch(addPoints({ walletAddress: user.walletAddress, points: 150 }))
         .unwrap()
         .then(() => console.log("Points successfully updated"))
         .catch((err) => console.error("Failed to update points:", err));
@@ -64,13 +64,13 @@ export default function AllTasksCompletedPopup({ onClose }) {
 
             <ol className="text-left list-decimal pl-5 mb-4 text-gray-300">
               <li className={step >= 0 ? "text-green-400" : "text-gray-500"}>
-                Balance Rewards: {step >= 0 ? "100" : "0"}
+                Balance Rewards: {step >= 0 ? "50" : "0"}
               </li>
               <li className={step >= 1 ? "text-green-400" : "text-gray-500"}>
-                Transaction Rewards: {step >= 1 ? "200" : "0"}
+                Transaction Rewards: {step >= 1 ? "50" : "0"}
               </li>
               <li className={step >= 2 ? "text-green-400" : "text-gray-500"}>
-                OG Reward: {step >= 2 ? "1600 points" : "0"}
+                OG Reward: {step >= 2 ? "50 points" : "0"}
               </li>
             </ol>
 
